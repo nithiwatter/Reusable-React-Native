@@ -38,7 +38,7 @@ export default function Typography(props) {
     gray2,
     style,
     children,
-    ...props
+    ...otherProps
   } = props;
 
   const textStyles = [
@@ -78,7 +78,7 @@ export default function Typography(props) {
   ];
 
   return (
-    <Text style={textStyles} {...props}>
+    <Text style={textStyles} {...otherProps}>
       {children}
     </Text>
   );

@@ -115,7 +115,7 @@ export default class Block extends Component {
       bottom,
       card,
       //   shadow,
-      elevation = 5,
+      elevation = 0,
       color,
       space,
       padding,
@@ -131,7 +131,7 @@ export default class Block extends Component {
       styles.block,
       flex && { flex },
       flex === false && { flex: 0 }, // reset / disable flex
-      width ? { width } : { width: "100%" },
+      width && { width },
       height && { height },
       row && styles.row,
       column && styles.column,

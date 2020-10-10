@@ -6,43 +6,14 @@ import { theme } from "../config";
 import Block from "./Block";
 
 export default function Icon(props) {
-  const {
-    name,
-    size = 40,
-    iconSize = 20,
-    iconColor = "white",
-    borderWidth = 0,
-    borderRadius = 0,
-    borderColor = "primary",
-    square,
-    style,
-    ...otherProps
-  } = props;
-
-  const iconContainerStyle = {
-    width: size,
-    height: size,
-    borderWidth,
-    borderRadius: square ? borderRadius : size / 2,
-    borderColor: styles[borderColor] ? styles[borderColor].color : borderColor, // if borderColor is one of the presets, use that
-    ...style,
-  };
+  const { name, iconSize = 20, iconColor = "white" } = props;
 
   return (
-    <Block
-      flex={false}
-      row
-      middle
-      center
-      style={iconContainerStyle}
-      {...otherProps}
-    >
-      <MaterialCommunityIcons
-        name={name}
-        color={styles[iconColor] ? styles[iconColor].color : iconColor}
-        size={iconSize}
-      />
-    </Block>
+    <MaterialCommunityIcons
+      name={name}
+      color={styles[iconColor] ? styles[iconColor].color : iconColor}
+      size={iconSize}
+    />
   );
 }
 
