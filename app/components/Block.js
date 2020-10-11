@@ -216,4 +216,5 @@ const styles = StyleSheet.create({
   white: { backgroundColor: theme.colors.white },
   gray: { backgroundColor: theme.colors.gray },
   gray2: { backgroundColor: theme.colors.gray2 },
+  light: { backgroundColor: theme.colors.light },
 });

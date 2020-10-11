@@ -30,7 +30,7 @@ export default function Input(props) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme.colors.white,
-    borderRadius: 25,
-    padding: 15,
+    borderRadius: theme.sizes.radius,
+    padding: theme.sizes.inputPadding,
   },
 });

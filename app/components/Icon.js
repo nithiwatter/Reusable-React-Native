@@ -3,16 +3,15 @@ import { StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { theme } from "../config";
-import Block from "./Block";
 
 export default function Icon(props) {
-  const { name, iconSize = 20, iconColor = "white" } = props;
+  const { name, size = 20, color = "white" } = props;
 
   return (
     <MaterialCommunityIcons
       name={name}
-      color={styles[iconColor] ? styles[iconColor].color : iconColor}
-      size={iconSize}
+      color={styles[color] ? styles[color].color : color}
+      size={size}
     />
   );
 }
