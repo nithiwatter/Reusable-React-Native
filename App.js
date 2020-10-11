@@ -10,14 +10,13 @@ import Screen from "./app/components/Screen";
 import Button from "./app/components/Button";
 import Picker from "./app/components/Picker";
 import IconPickerItem from "./app/components/IconPickerItem";
-import Input from "./app/components/Input";
 import {
   FormInput,
   FormPicker,
   Form,
-  ErrorMessage,
   SubmitButton,
 } from "./app/components/form";
+import ImageList from "./app/components/imagePicker/ImageList";
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required().min(1).label("Title"),
@@ -133,9 +132,18 @@ const categories = [
 
 export default function App() {
   const [selectedItem, setSelectedItem] = React.useState(null);
+  const [imageUris, setImageUris] = React.useState([]);
+
+  const onAddImage = (uri) => {
+    setImageUris([...imageUris, uri]);
+  };
+
+  const onRemoveImage = (uri) => {
+    setImageUris(imageUris.filter((img) => img !== uri));
+  };
 
   return (
-    <Screen color="gray2">
+    <Screen>
       <ScrollView>
         <Block
           flex={false}
@@ -265,6 +273,11 @@ export default function App() {
           />
           <SubmitButton title="Post" />
         </Form>
+        <ImageList
+          imageUris={imageUris}
+          onAddImage={onAddImage}
+          onRemoveImage={onRemoveImage}
+        />
       </ScrollView>
     </Screen>
   );
