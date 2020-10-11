@@ -24,6 +24,7 @@ export default function Picker(props) {
     onSelectItem,
     numberOfColumns,
     PickerItemComponent = PickerItem,
+    ...otherProps
   } = props;
   const [modalVisible, setModalVisible] = React.useState(false);
 
@@ -36,6 +37,7 @@ export default function Picker(props) {
           style={[styles.container, { width }]}
           row
           center
+          {...otherProps}
         >
           {icon && (
             <Block flex={false} row middle center>
@@ -93,7 +95,5 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     borderRadius: 25,
     padding: 15,
-    // padding: theme.sizes.padding,
-    // marginVertical: theme.sizes.padding / 3,
   },
 });

@@ -1,5 +1,6 @@
 import React from "react";
 import { ScrollView } from "react-native";
+import * as Yup from "yup";
 import Block from "./app/components/Block";
 import Typography from "./app/components/Typography";
 import Icon from "./app/components/Icon";
@@ -10,6 +11,20 @@ import Button from "./app/components/Button";
 import Picker from "./app/components/Picker";
 import IconPickerItem from "./app/components/IconPickerItem";
 import Input from "./app/components/Input";
+import {
+  FormInput,
+  FormPicker,
+  Form,
+  ErrorMessage,
+  SubmitButton,
+} from "./app/components/form";
+
+const validationSchema = Yup.object().shape({
+  title: Yup.string().required().min(1).label("Title"),
+  price: Yup.number().required().min(1).max(10000).label("Price"),
+  description: Yup.string().label("Description"),
+  category: Yup.object().required().nullable().label("Category"),
+});
 
 const categories = [
   {
@@ -207,13 +222,49 @@ export default function App() {
           icon="menu"
           onSelectItem={setSelectedItem}
           PickerItemComponent={IconPickerItem}
-        ></Picker>
-        <Input
-          width="100%"
-          placeholder="hi there"
-          icon="menu"
           margin={[10, 0]}
-        ></Input>
+        ></Picker>
+        <Form
+          initialValues={{
+            title: "",
+            price: "",
+            description: "",
+            category: null,
+          }}
+          onSubmit={(values) => console.log(values)}
+          validationSchema={validationSchema}
+        >
+          <FormInput
+            maxLength={255}
+            name="title"
+            placeholder="Title"
+            margin={[10, 0]}
+          />
+          <FormInput
+            keyboardType="numeric"
+            maxLength={8}
+            name="price"
+            placeholder="Price"
+            margin={[10, 0]}
+          />
+          <FormPicker
+            items={categories}
+            name="category"
+            numberOfColumns={1}
+            placeholder="Category"
+            icon="menu"
+            margin={[10, 0]}
+          />
+          <FormInput
+            maxLength={255}
+            multiline
+            name="description"
+            numberOfLines={3}
+            placeholder="Description"
+            margin={[10, 0]}
+          />
+          <SubmitButton title="Post" />
+        </Form>
       </ScrollView>
     </Screen>
   );

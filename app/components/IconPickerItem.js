@@ -11,7 +11,8 @@ import Typography from "./Typography";
 export default function IconPickerItem(props) {
   const { item, onPress, showChecked } = props;
   return (
-    <Block flex={false} center middle width="33%" padding={10}>
+    // use { flex: 1 } to distribute space evenly for multicol FlatList
+    <Block center middle padding={10}>
       <TouchableOpacity onPress={onPress}>
         <Badge
           size={70}
