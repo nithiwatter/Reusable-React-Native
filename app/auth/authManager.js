@@ -26,7 +26,6 @@ const signinWithGoogleAsync = () => {
       if (result.type === "success") {
         const res = await signinWithGoogleFirebase(result);
         console.log(res);
-        console.log("---------");
       } else {
         return resolve({ cancelled: true });
       }
@@ -43,6 +42,7 @@ const signinWithGoogleFirebase = (googleUser) => {
     const unsubscribe = firebase
       .auth()
       .onAuthStateChanged(function (firebaseUser) {
+        console.log(firebaseUser);
         unsubscribe();
         // Check if we are already signed-in Firebase with the correct user.
         if (!isUserEqual(googleUser, firebaseUser)) {
