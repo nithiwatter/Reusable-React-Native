@@ -1,4 +1,5 @@
 import React from "react";
+import { firebase } from "../firebase/config";
 
 import { theme } from "../config";
 import Screen from "../components/Screen";
