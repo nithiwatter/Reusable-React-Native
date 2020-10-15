@@ -6,7 +6,14 @@ import Block from "./Block";
 import Icon from "./Icon";
 
 export default function Input(props) {
-  const { icon, width = "100%", margin, elevation = 0, ...otherProps } = props;
+  const {
+    icon,
+    width = "100%",
+    margin,
+    elevation = 0,
+    style = {},
+    ...otherProps
+  } = props;
 
   return (
     <Block
@@ -14,7 +21,7 @@ export default function Input(props) {
       row
       center
       width={width}
-      style={styles.container}
+      style={{ ...styles.container, ...style }}
       elevation={elevation}
       margin={margin}
       // style={border && { borderWidth: 2, borderColor: theme.colors.primary }}

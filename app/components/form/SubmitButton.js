@@ -9,7 +9,7 @@ export default function SubmitButton(props) {
   const { handleSubmit } = useFormikContext();
   return (
     <Button gradient onPress={handleSubmit} {...otherProps}>
-      <Typography h3 white>
+      <Typography h3 bold white>
         {title}
       </Typography>
     </Button>

@@ -1,4 +1,5 @@
 import React from "react";
+import Block from "../Block";
 import Typography from "../Typography";
 
 export default function ErrorMessage(props) {
@@ -6,8 +7,10 @@ export default function ErrorMessage(props) {
   if (!visible || !error) return null;
 
   return (
-    <Typography h3 accent>
-      {error}
-    </Typography>
+    <Block flex={false} width="100%" middle padding={10}>
+      <Typography h3 accent>
+        {error}
+      </Typography>
+    </Block>
   );
 }

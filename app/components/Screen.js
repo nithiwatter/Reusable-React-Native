@@ -7,6 +7,7 @@ export default function Screen(props) {
   return (
     <Block
       padding={!modal && [Constants.statusBarHeight, 0, 0, 0]}
+      color="white"
       {...props}
     ></Block>
   );

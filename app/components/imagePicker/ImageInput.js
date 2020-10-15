@@ -63,7 +63,7 @@ export default class ImageInput extends Component {
           card
           style={styles.container}
         >
-          {!imageUri && <Icon iconColor="gray" name="camera" iconSize={40} />}
+          {!imageUri && <Icon color="gray" name="camera" size={40} />}
           {imageUri && (
             <Image source={{ uri: imageUri }} style={styles.image} />
           )}

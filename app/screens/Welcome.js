@@ -19,9 +19,8 @@ export default function Welcome({ navigation }) {
 
         <Block flex={false} middle center width="80%" margin={[30, 0]}>
           <Button
-            gradient
+            color="primary"
             width="100%"
-            elevation={1}
             onPress={() => navigation.navigate("Login")}
           >
             <Typography h3 bold white>
@@ -29,14 +28,11 @@ export default function Welcome({ navigation }) {
             </Typography>
           </Button>
           <Button
-            gradient
             width="100%"
-            elevation={1}
-            startColor={theme.colors.secondary}
-            endColor={theme.colors.tertiary}
             onPress={() => navigation.navigate("Register")}
+            style={{ borderWidth: 1, borderColor: theme.colors.primary }}
           >
-            <Typography h3 bold white>
+            <Typography h3 primary bold>
               Register
             </Typography>
           </Button>
