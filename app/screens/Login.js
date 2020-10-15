@@ -1,6 +1,6 @@
 import React from "react";
-import { firebase } from "../firebase/config";
 
+import authManager from "../auth/authManager";
 import { theme } from "../config";
 import Screen from "../components/Screen";
 import Block from "../components/Block";
@@ -47,6 +47,7 @@ export default function Login() {
           <Button
             width="100%"
             style={{ borderWidth: 1, borderColor: theme.colors.primary }}
+            onPress={authManager.signinWithGoogleAsync}
           >
             <Typography h3 primary bold>
               Google Login
