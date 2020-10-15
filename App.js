@@ -1,6 +1,16 @@
 import React from "react";
-import Home from "./app/screens/Home";
+import { NavigationContainer } from "@react-navigation/native";
+import {
+  DrawerNavigator,
+  AuthenticationStackNavigator,
+} from "./app/navigation/AppNavigation";
 
 export default function App() {
-  return <Home></Home>;
+  const [user, _] = React.useState(false);
+
+  return (
+    <NavigationContainer>
+      {user ? <DrawerNavigator /> : <AuthenticationStackNavigator />}
+    </NavigationContainer>
+  );
 }

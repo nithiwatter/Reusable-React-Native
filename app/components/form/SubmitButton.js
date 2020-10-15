@@ -5,10 +5,10 @@ import Button from "../Button";
 import Typography from "../Typography";
 
 export default function SubmitButton(props) {
-  const { title } = props;
+  const { title, ...otherProps } = props;
   const { handleSubmit } = useFormikContext();
   return (
-    <Button gradient onPress={handleSubmit}>
+    <Button gradient onPress={handleSubmit} {...otherProps}>
       <Typography h3 white>
         {title}
       </Typography>

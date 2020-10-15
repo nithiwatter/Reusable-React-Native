@@ -6,7 +6,8 @@ import Block from "./Block";
 import Icon from "./Icon";
 
 export default function Input(props) {
-  const { icon, width = "100%", margin, ...otherProps } = props;
+  const { icon, width = "100%", margin, elevation = 0, ...otherProps } = props;
+
   return (
     <Block
       flex={false}
@@ -14,8 +15,9 @@ export default function Input(props) {
       center
       width={width}
       style={styles.container}
-      elevation={2}
+      elevation={elevation}
       margin={margin}
+      // style={border && { borderWidth: 2, borderColor: theme.colors.primary }}
     >
       {icon && <Icon name={icon} iconSize={20} iconColor="gray2" />}
       <TextInput
