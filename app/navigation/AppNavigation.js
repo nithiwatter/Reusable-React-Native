@@ -40,6 +40,20 @@ const MenuIcon = (props) => {
   );
 };
 
+const BackIcon = (props) => {
+  const { navigation, ...otherProps } = props;
+  return (
+    <TouchableWithoutFeedback
+      {...otherProps}
+      onPress={() => navigation.goBack()}
+    >
+      <Block middle center flex={false} margin={[0, 15]}>
+        <Icon name="chevron-left" color={theme.colors.primary} size={40} />
+      </Block>
+    </TouchableWithoutFeedback>
+  );
+};
+
 const HomeStackNavigator = () => {
   return (
     <HomeStack.Navigator
@@ -76,8 +90,28 @@ const AuthenticationStackNavigator = () => {
         component={Welcome}
         options={{ headerShown: false }}
       />
-      <AuthenticationStack.Screen name="Login" component={Login} />
-      <AuthenticationStack.Screen name="Register" component={Register} />
+      <AuthenticationStack.Screen
+        name="Login"
+        component={Login}
+        options={({ navigation }) => ({
+          headerStyle: { elevation: 0 },
+          headerTitle: "",
+          headerLeft: (props) => (
+            <BackIcon navigation={navigation} {...props} />
+          ),
+        })}
+      />
+      <AuthenticationStack.Screen
+        name="Register"
+        component={Register}
+        options={({ navigation }) => ({
+          headerStyle: { elevation: 0 },
+          headerTitle: "",
+          headerLeft: (props) => (
+            <BackIcon navigation={navigation} {...props} />
+          ),
+        })}
+      />
     </AuthenticationStack.Navigator>
   );
 };

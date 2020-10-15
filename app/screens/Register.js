@@ -13,6 +13,9 @@ import { Form, FormInput, SubmitButton } from "../components/form";
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label("Email"),
   password: Yup.string().required().min(3).label("Password"),
+  repeatedPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Entered passwords are not the same")
+    .required("Password confirm is required"),
 });
 
 export default function Register() {
