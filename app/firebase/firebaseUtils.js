@@ -38,6 +38,21 @@ const addUserToFirestore = (user) => {
   });
 };
 
+const getUserFromFirestore = (uid) => {
+  return new Promise((resolve) => {
+    usersRef
+      .doc(uid)
+      .get()
+      .then((document) => {
+        const userData = document.data();
+        resolve({
+          user: { ...userData, id: uid, userID: uid },
+          accountCreated: false,
+        });
+      });
+  });
+};
+
 const updateProfilePicture = (userId, downloadURI) => {
   return new Promise((resolve) => {
     usersRef
@@ -71,4 +86,9 @@ const isUserEqual = (googleUser, firebaseUser) => {
   return false;
 };
 
-export default { addUserToFirestore, updateProfilePicture, isUserEqual };
+export default {
+  addUserToFirestore,
+  getUserFromFirestore,
+  updateProfilePicture,
+  isUserEqual,
+};

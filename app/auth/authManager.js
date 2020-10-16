@@ -3,26 +3,17 @@ import { firebase } from "../firebase/config";
 import firebaseUtils from "../firebase/firebaseUtils";
 import firebaseStorage from "../firebase/firebaseStorage";
 import { ANDROID_CLIENT_ID } from "@env";
-
-const usersRef = firebase.firestore().collection("users");
+import ErrorCode from "../config/errorCode";
 
 const retrievePersistedAuthUser = () => {
   // check if there is a token persisted already in AsyncStorage
   return new Promise((resolve) => {
-    return firebase.auth().onAuthStateChanged((response) => {
+    return firebase.auth().onAuthStateChanged(async (response) => {
       if (response) {
         const { uid } = response;
         // access our firestore to get additional information regarding this user
-        usersRef
-          .doc(uid)
-          .get()
-          .then((document) => {
-            const userData = document.data();
-            resolve({
-              user: { ...userData, id: uid, userID: uid },
-              accountCreated: false,
-            });
-          });
+        const userResult = await firebaseUtils.getUserFromFirestore(uid);
+        resolve(userResult);
         return;
       } else {
         return resolve({ user: null });
@@ -40,8 +31,8 @@ const signinWithGoogleAsync = () => {
       });
 
       if (result.type === "success") {
-        const userData = await signinWithGoogleFirebase(result);
-        return resolve(userData);
+        const userResult = await signinWithGoogleFirebase(result);
+        return resolve(userResult);
       } else {
         return resolve({ cancelled: true });
       }
@@ -57,7 +48,7 @@ const signinWithGoogleFirebase = (googleUser) => {
     // We need to register an Observer on Firebase Auth to make sure auth is initialized.
     const unsubscribe = firebase
       .auth()
-      .onAuthStateChanged(function (firebaseUser) {
+      .onAuthStateChanged(async function (firebaseUser) {
         unsubscribe();
         // Check if we are already signed-in Firebase with the correct user.
         if (!firebaseUtils.isUserEqual(googleUser, firebaseUser)) {
@@ -94,12 +85,19 @@ const signinWithGoogleFirebase = (googleUser) => {
                 // add user to firestore
                 const userResult = await firebaseUtils.addUserToFirestore(user);
                 resolve(userResult);
+              } else {
+                // have already logged in with Google before
+                const userResult = await firebaseUtils.getUserFromFirestore(
+                  uid
+                );
+                resolve(userResult);
               }
             })
             // error passed in as an argument
             .catch((e) => {
               console.log(e);
               // Handle Errors here.
+              // error related to sigining in via Provider
               // const errorCode = error.code;
               // const  errorMessage = error.message;
               // The email of the user's account used.
@@ -111,16 +109,8 @@ const signinWithGoogleFirebase = (googleUser) => {
         } else {
           // if the user is equal (has already logged in via Firebase authentication system)
           const { uid } = firebaseUser;
-          usersRef
-            .doc(uid)
-            .get()
-            .then((document) => {
-              const userData = document.data();
-              resolve({
-                user: { ...userData, id: uid, userID: uid },
-                accountCreated: false,
-              });
-            });
+          const userResult = await firebaseUtils.getUserFromFirestore(uid);
+          resolve(userResult);
         }
       });
   });
@@ -184,10 +174,52 @@ const createAccountWithEmailAndPassword = (userDetails) => {
   });
 };
 
+const loginWithEmailAndPassword = async (email, password) => {
+  return new Promise((resolve) => {
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(async (response) => {
+        const uid = response.user.uid;
+        const userResult = await firebaseUtils.getUserFromFirestore(uid);
+        resolve(userResult);
+      })
+      .catch((e) => {
+        // handling error from firebase authentication system
+        let errorCode = ErrorCode.serverError;
+        switch (e.code) {
+          case "auth/wrong-password":
+            errorCode = ErrorCode.invalidPassword;
+            break;
+          case "auth/network-request-failed":
+            errorCode = ErrorCode.networkError;
+            break;
+          case "auth/user-not-found":
+            errorCode = ErrorCode.userNotFound;
+            break;
+          default:
+            errorCode = ErrorCode.serverError;
+        }
+        resolve({ error: errorCode });
+      });
+  });
+};
+
+const logout = () => {
+  return new Promise((resolve) => {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => resolve({ success: "Logged out successfully!" }));
+  });
+};
+
 const authManager = {
   retrievePersistedAuthUser,
   signinWithGoogleAsync,
   createAccountWithEmailAndPassword,
+  loginWithEmailAndPassword,
+  logout,
 };
 
 export default authManager;

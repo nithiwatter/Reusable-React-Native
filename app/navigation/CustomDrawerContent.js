@@ -8,13 +8,20 @@ import {
 import { Avatar } from "react-native-elements";
 
 import AuthContext from "../auth/context";
+import authManager from "../auth/authManager";
 import { theme } from "../config";
 import Block from "../components/Block";
 import Typography from "../components/Typography";
 import Icon from "../components/Icon";
 
 export default function CustomDrawerContent(props) {
-  const { user } = React.useContext(AuthContext);
+  const { user, setUser } = React.useContext(AuthContext);
+
+  const handleLogout = async () => {
+    await authManager.logout();
+    setUser(null);
+  };
+
   return (
     <DrawerContentScrollView {...props}>
       <Block flex={false} row center margin={[30, 0]}>
@@ -57,7 +64,7 @@ export default function CustomDrawerContent(props) {
         icon={({ color, size }) => (
           <Icon name="logout" color={color} size={size} />
         )}
-        onPress={() => alert("Logged out")}
+        onPress={handleLogout}
       />
     </DrawerContentScrollView>
   );

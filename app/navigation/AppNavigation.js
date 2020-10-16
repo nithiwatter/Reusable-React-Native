@@ -157,7 +157,7 @@ const DrawerNavigator = () => {
       drawerType="back"
       openByDefault={false}
       drawerContentOptions={{
-        activeTintColor: theme.colors.primary,
+        activeTintColor: theme.colors.secondary,
         labelStyle: {
           fontSize: theme.sizes.h2,
           fontWeight: "bold",
