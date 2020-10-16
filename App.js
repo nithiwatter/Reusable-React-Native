@@ -18,7 +18,7 @@ LogBox.ignoreLogs(["Setting a timer"]);
 export default function App() {
   const [user, setUser] = React.useState(null);
   const [isReady, setIsReady] = React.useState(false);
-  console.log(user);
+  console.log("User state changed: ", user);
 
   if (!isReady) {
     return <Loading setUser={setUser} setIsReady={setIsReady} />;
@@ -27,7 +27,7 @@ export default function App() {
   return (
     <AuthContext.Provider value={{ user, setUser }}>
       <NavigationContainer>
-        <AuthenticationStackNavigator />
+        {user ? <DrawerNavigator /> : <AuthenticationStackNavigator />}
       </NavigationContainer>
     </AuthContext.Provider>
   );

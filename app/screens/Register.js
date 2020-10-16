@@ -10,6 +10,7 @@ import Block from "../components/Block";
 import Typography from "../components/Typography";
 import Button from "../components/Button";
 import AccountImageInput from "../components/imagePicker/AccountImageInput";
+import LoadingIndicator from "../components/LoadingIndicator";
 import {
   Form,
   FormInput,
@@ -29,8 +30,11 @@ export default function Register() {
   const { setUser } = React.useContext(AuthContext);
   const [registerFailed, setRegisterFailed] = React.useState("");
   const [image, setImage] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   const handleRegister = async (values) => {
+    // start showing loading indicator
+    setLoading(true);
     // values from formik
     const { email, password } = values;
     const userData = await authManager.createAccountWithEmailAndPassword({
@@ -38,18 +42,22 @@ export default function Register() {
       password,
       photoURI: image,
     });
-    console.log(userData);
-    const { error } = userData;
+    // uploading profile picture and registering user into firebase firestore done
+    setLoading(false);
+
+    const { user, error } = userData;
     // set register error (error message sent from firebase)
     if (error) {
       setRegisterFailed(error);
+    } else {
+      setUser(user);
     }
-    // setUser(user);
   };
 
   return (
     <Screen modal>
       <ScrollView contentContainerStyle={styles.container}>
+        {loading && <LoadingIndicator />}
         <Block middle center>
           <Typography h1 bold accent>
             Create new account
