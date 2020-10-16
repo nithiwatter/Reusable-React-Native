@@ -10,9 +10,7 @@ import * as ImagePicker from "expo-image-picker";
 import Badge from "../Badge";
 import Icon from "../Icon";
 
-export default function AccountImageInput() {
-  const [image, setImage] = React.useState(null);
-
+export default function AccountImageInput({ image, setImage }) {
   React.useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {

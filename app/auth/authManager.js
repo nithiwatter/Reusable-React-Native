@@ -1,5 +1,6 @@
 import * as Google from "expo-google-app-auth";
 import { firebase } from "../firebase/config";
+import firebaseStorage from "../firebase/firebaseStorage";
 import { ANDROID_CLIENT_ID } from "@env";
 
 const usersRef = firebase.firestore().collection("users");
@@ -23,7 +24,7 @@ const retrievePersistedAuthUser = () => {
           });
         return;
       } else {
-        return resolve(null);
+        return resolve({ user: null });
       }
     });
   });
@@ -49,6 +50,43 @@ const signinWithGoogleAsync = () => {
   });
 };
 
+const addUserToFirestore = (user) => {
+  const {
+    uid,
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    photoURL,
+    timestamp,
+  } = user;
+
+  return new Promise((resolve) => {
+    const userData = {
+      id: uid,
+      email: email || "",
+      firstName: firstName || "",
+      lastName: lastName || "",
+      phone: phoneNumber || "",
+      profilePictureURL: photoURL || "",
+      userID: uid,
+      created_at: timestamp,
+      createdAt: timestamp,
+    };
+
+    // save this user to the firestore collection
+    usersRef
+      .doc(uid)
+      .set(userData)
+      .then(() => {
+        resolve({
+          user: { ...userData, id: uid, userID: uid },
+          accountCreated: true,
+        });
+      });
+  });
+};
+
 const signinWithGoogleFirebase = (googleUser) => {
   return new Promise(async (resolve) => {
     // console.log("Google Auth Response", googleUser);
@@ -68,7 +106,7 @@ const signinWithGoogleFirebase = (googleUser) => {
           firebase
             .auth()
             .signInWithCredential(credential)
-            .then((response) => {
+            .then(async (response) => {
               const isNewUser = response.additionalUserInfo.isNewUser;
               const {
                 given_name,
@@ -79,28 +117,19 @@ const signinWithGoogleFirebase = (googleUser) => {
               if (isNewUser) {
                 // get the current timestamp
                 const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-                const userData = {
-                  id: uid,
-                  email: email || "",
-                  firstName: given_name || "",
-                  lastName: family_name || "",
-                  phone: phoneNumber || "",
-                  profilePictureURL: photoURL || "",
-                  userID: uid,
-                  created_at: timestamp,
-                  createdAt: timestamp,
+                const user = {
+                  uid,
+                  firstName: given_name,
+                  lastName: family_name,
+                  email,
+                  phoneNumber,
+                  photoURL,
+                  timestamp,
                 };
 
-                // save this user to the firestore collection
-                usersRef
-                  .doc(uid)
-                  .set(userData)
-                  .then(() => {
-                    resolve({
-                      user: { ...userData, id: uid, userID: uid },
-                      accountCreated: true,
-                    });
-                  });
+                // add user to firestore
+                const userResult = await addUserToFirestore(user);
+                resolve(userResult);
               }
             })
             // error passed in as an argument
@@ -152,6 +181,82 @@ const isUserEqual = (googleUser, firebaseUser) => {
   return false;
 };
 
-const authManager = { retrievePersistedAuthUser, signinWithGoogleAsync };
+const createAccountWithEmailAndPassword = (userDetails) => {
+  // main function representing promise for creating account
+  const accountCreationTask = (userDetails) => {
+    return new Promise((resolve) => {
+      const { email, password, photoURI } = userDetails;
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(async (response) => {
+          const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+          // grab the user uid from firebase authentication
+          const uid = response.user.uid;
+
+          const user = { uid, email, timestamp };
+          const userResult = await addUserToFirestore(user);
+
+          // if a custom photoURI is provided (from the local device)
+          if (photoURI) {
+            firebaseStorage
+              .uploadImageAsync(photoURI)
+              .then(async (response) => {
+                if (response.error) {
+                  // handling upload file error
+                  // will need to handle this later
+                } else {
+                  // handling upload file success
+                  // we now have the correct file url hosted in firebase storage
+                  const downloadURL = response.downloadURL;
+                  await updateProfilePicture(uid, downloadURL);
+                  userResult.user.profilePictureURL = downloadURL;
+                  resolve(userResult);
+                }
+              });
+          } else {
+            // no custom photo to be uploaded - just return the user
+            resolve(userResult);
+          }
+        })
+        .catch(function (error) {
+          // Handle Errors here.
+          // when we fail to sign in with firebase authentication
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          if (errorCode == "auth/weak-password") {
+            resolve({ error: "The password is too weak." });
+          } else {
+            resolve({ error: errorMessage });
+          }
+        });
+    });
+  };
+
+  return new Promise(async (resolve) => {
+    const userResult = await accountCreationTask(userDetails);
+    resolve(userResult);
+  });
+};
+
+const updateProfilePicture = (userId, downloadURI) => {
+  return new Promise((resolve) => {
+    usersRef
+      .doc(userId)
+      .update({ profilePictureURL: downloadURI })
+      .then(() => {
+        resolve({ success: true });
+      })
+      .catch((error) => {
+        resolve({ error });
+      });
+  });
+};
+
+const authManager = {
+  retrievePersistedAuthUser,
+  signinWithGoogleAsync,
+  createAccountWithEmailAndPassword,
+};
 
 export default authManager;

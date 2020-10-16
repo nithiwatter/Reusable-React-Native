@@ -2,13 +2,20 @@ import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import * as Yup from "yup";
 
+import authManager from "../auth/authManager";
+import AuthContext from "../auth/context";
 import { theme } from "../config";
 import Screen from "../components/Screen";
 import Block from "../components/Block";
 import Typography from "../components/Typography";
 import Button from "../components/Button";
 import AccountImageInput from "../components/imagePicker/AccountImageInput";
-import { Form, FormInput, SubmitButton } from "../components/form";
+import {
+  Form,
+  FormInput,
+  SubmitButton,
+  ErrorMessage,
+} from "../components/form";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required().email().label("Email"),
@@ -19,6 +26,27 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function Register() {
+  const { setUser } = React.useContext(AuthContext);
+  const [registerFailed, setRegisterFailed] = React.useState("");
+  const [image, setImage] = React.useState(null);
+
+  const handleRegister = async (values) => {
+    // values from formik
+    const { email, password } = values;
+    const userData = await authManager.createAccountWithEmailAndPassword({
+      email,
+      password,
+      photoURI: image,
+    });
+    console.log(userData);
+    const { error } = userData;
+    // set register error (error message sent from firebase)
+    if (error) {
+      setRegisterFailed(error);
+    }
+    // setUser(user);
+  };
+
   return (
     <Screen modal>
       <ScrollView contentContainerStyle={styles.container}>
@@ -27,11 +55,16 @@ export default function Register() {
             Create new account
           </Typography>
           <Block flex={false} middle center width="80%" margin={[30, 0]}>
-            <AccountImageInput />
+            <AccountImageInput image={image} setImage={setImage} />
             <Form
               initialValues={{ email: "", password: "", repeatedPassword: "" }}
               validationSchema={validationSchema}
+              onSubmit={handleRegister}
             >
+              <ErrorMessage
+                error={registerFailed}
+                visible={registerFailed !== ""}
+              />
               <FormInput
                 name="email"
                 placeholder="Email"
