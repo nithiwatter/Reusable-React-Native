@@ -7,6 +7,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { theme } from "../config";
 import Block from "../components/Block";
 import Icon from "../components/Icon";
+import CustomDrawerContent from "./CustomDrawerContent";
 
 import Home from "../screens/Home";
 import Search from "../screens/Search";
@@ -150,10 +151,41 @@ const MainTabNavigator = () => {
 };
 
 const DrawerNavigator = () => {
+  // need drawerType (back) to fix initial blinking
   return (
-    <Drawer.Navigator>
-      <Drawer.Screen name="Main" component={MainTabNavigator} />
-      <Drawer.Screen name="MyProfile" component={MyProfile} />
+    <Drawer.Navigator
+      drawerType="back"
+      openByDefault={false}
+      drawerContentOptions={{
+        activeTintColor: theme.colors.primary,
+        labelStyle: {
+          fontSize: theme.sizes.h2,
+          fontWeight: "bold",
+          color: theme.colors.black,
+        },
+      }}
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+    >
+      <Drawer.Screen
+        name="Main"
+        component={MainTabNavigator}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <Icon name="view-dashboard" color={color} size={size} />
+          ),
+          drawerLabel: "Dashboard",
+        }}
+      />
+      <Drawer.Screen
+        name="MyProfile"
+        component={MyProfile}
+        options={{
+          drawerIcon: ({ color, size }) => (
+            <Icon name="account" color={color} size={size} />
+          ),
+          drawerLabel: "My Profile",
+        }}
+      />
     </Drawer.Navigator>
   );
 };

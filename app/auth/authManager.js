@@ -1,5 +1,6 @@
 import * as Google from "expo-google-app-auth";
 import { firebase } from "../firebase/config";
+import firebaseUtils from "../firebase/firebaseUtils";
 import firebaseStorage from "../firebase/firebaseStorage";
 import { ANDROID_CLIENT_ID } from "@env";
 
@@ -50,43 +51,6 @@ const signinWithGoogleAsync = () => {
   });
 };
 
-const addUserToFirestore = (user) => {
-  const {
-    uid,
-    firstName,
-    lastName,
-    email,
-    phoneNumber,
-    photoURL,
-    timestamp,
-  } = user;
-
-  return new Promise((resolve) => {
-    const userData = {
-      id: uid,
-      email: email || "",
-      firstName: firstName || "",
-      lastName: lastName || "",
-      phone: phoneNumber || "",
-      profilePictureURL: photoURL || "",
-      userID: uid,
-      created_at: timestamp,
-      createdAt: timestamp,
-    };
-
-    // save this user to the firestore collection
-    usersRef
-      .doc(uid)
-      .set(userData)
-      .then(() => {
-        resolve({
-          user: { ...userData, id: uid, userID: uid },
-          accountCreated: true,
-        });
-      });
-  });
-};
-
 const signinWithGoogleFirebase = (googleUser) => {
   return new Promise(async (resolve) => {
     // console.log("Google Auth Response", googleUser);
@@ -96,7 +60,7 @@ const signinWithGoogleFirebase = (googleUser) => {
       .onAuthStateChanged(function (firebaseUser) {
         unsubscribe();
         // Check if we are already signed-in Firebase with the correct user.
-        if (!isUserEqual(googleUser, firebaseUser)) {
+        if (!firebaseUtils.isUserEqual(googleUser, firebaseUser)) {
           // Build Firebase credential with the Google ID token.
           const credential = firebase.auth.GoogleAuthProvider.credential(
             googleUser.idToken,
@@ -128,7 +92,7 @@ const signinWithGoogleFirebase = (googleUser) => {
                 };
 
                 // add user to firestore
-                const userResult = await addUserToFirestore(user);
+                const userResult = await firebaseUtils.addUserToFirestore(user);
                 resolve(userResult);
               }
             })
@@ -162,25 +126,6 @@ const signinWithGoogleFirebase = (googleUser) => {
   });
 };
 
-const isUserEqual = (googleUser, firebaseUser) => {
-  if (firebaseUser) {
-    const providerData = firebaseUser.providerData;
-    for (let i = 0; i < providerData.length; i++) {
-      if (
-        // googleUser returned by/redirected from expo browser
-        // check if this id has already been registered in our firebase authentication server
-        providerData[i].providerId ===
-          firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
-        providerData[i].uid === googleUser.user.id
-      ) {
-        // We don't need to reauth the Firebase connection.
-        return true;
-      }
-    }
-  }
-  return false;
-};
-
 const createAccountWithEmailAndPassword = (userDetails) => {
   // main function representing promise for creating account
   const accountCreationTask = (userDetails) => {
@@ -195,7 +140,7 @@ const createAccountWithEmailAndPassword = (userDetails) => {
           const uid = response.user.uid;
 
           const user = { uid, email, timestamp };
-          const userResult = await addUserToFirestore(user);
+          const userResult = await firebaseUtils.addUserToFirestore(user);
 
           // if a custom photoURI is provided (from the local device)
           if (photoURI) {
@@ -203,13 +148,13 @@ const createAccountWithEmailAndPassword = (userDetails) => {
               .uploadImageAsync(photoURI)
               .then(async (response) => {
                 if (response.error) {
-                  // handling upload file error
-                  // will need to handle this later
+                  // handling upload file/photo error
+                  // should still log user in - but profile photo url not updated?
                 } else {
                   // handling upload file success
                   // we now have the correct file url hosted in firebase storage
                   const downloadURL = response.downloadURL;
-                  await updateProfilePicture(uid, downloadURL);
+                  await firebaseUtils.updateProfilePicture(uid, downloadURL);
                   userResult.user.profilePictureURL = downloadURL;
                   resolve(userResult);
                 }
@@ -236,20 +181,6 @@ const createAccountWithEmailAndPassword = (userDetails) => {
   return new Promise(async (resolve) => {
     const userResult = await accountCreationTask(userDetails);
     resolve(userResult);
-  });
-};
-
-const updateProfilePicture = (userId, downloadURI) => {
-  return new Promise((resolve) => {
-    usersRef
-      .doc(userId)
-      .update({ profilePictureURL: downloadURI })
-      .then(() => {
-        resolve({ success: true });
-      })
-      .catch((error) => {
-        resolve({ error });
-      });
   });
 };
 
