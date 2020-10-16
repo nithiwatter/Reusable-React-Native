@@ -9,7 +9,7 @@ import Block from "../components/Block";
 export default class Loading extends Component {
   async componentDidMount() {
     const { setUser, setIsReady } = this.props;
-    const user = await authManager.retrievePersistedAuthUser();
+    const { user } = await authManager.retrievePersistedAuthUser();
 
     // if there is a user, should be redirected to DrawerNavigator (main navigator)
     if (user) {

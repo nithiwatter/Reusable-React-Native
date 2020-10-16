@@ -2,12 +2,26 @@ import * as Google from "expo-google-app-auth";
 import { firebase } from "../firebase/config";
 import { ANDROID_CLIENT_ID } from "@env";
 
+const usersRef = firebase.firestore().collection("users");
+
 const retrievePersistedAuthUser = () => {
   // check if there is a token persisted already in AsyncStorage
   return new Promise((resolve) => {
-    return firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        return resolve(user);
+    return firebase.auth().onAuthStateChanged((response) => {
+      if (response) {
+        const { uid } = response;
+        // access our firestore to get additional information regarding this user
+        usersRef
+          .doc(uid)
+          .get()
+          .then((document) => {
+            const userData = document.data();
+            resolve({
+              user: { ...userData, id: uid, userID: uid },
+              accountCreated: false,
+            });
+          });
+        return;
       } else {
         return resolve(null);
       }
@@ -24,8 +38,8 @@ const signinWithGoogleAsync = () => {
       });
 
       if (result.type === "success") {
-        const res = await signinWithGoogleFirebase(result);
-        console.log(res);
+        const userData = await signinWithGoogleFirebase(result);
+        return resolve(userData);
       } else {
         return resolve({ cancelled: true });
       }
@@ -42,7 +56,6 @@ const signinWithGoogleFirebase = (googleUser) => {
     const unsubscribe = firebase
       .auth()
       .onAuthStateChanged(function (firebaseUser) {
-        console.log(firebaseUser);
         unsubscribe();
         // Check if we are already signed-in Firebase with the correct user.
         if (!isUserEqual(googleUser, firebaseUser)) {
@@ -55,9 +68,40 @@ const signinWithGoogleFirebase = (googleUser) => {
           firebase
             .auth()
             .signInWithCredential(credential)
-            .then((result) => {
-              console.log("User signed-in successfully");
-              resolve(result);
+            .then((response) => {
+              const isNewUser = response.additionalUserInfo.isNewUser;
+              const {
+                given_name,
+                family_name,
+              } = response.additionalUserInfo.profile;
+              const { uid, email, phoneNumber, photoURL } = response.user;
+
+              if (isNewUser) {
+                // get the current timestamp
+                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+                const userData = {
+                  id: uid,
+                  email: email || "",
+                  firstName: given_name || "",
+                  lastName: family_name || "",
+                  phone: phoneNumber || "",
+                  profilePictureURL: photoURL || "",
+                  userID: uid,
+                  created_at: timestamp,
+                  createdAt: timestamp,
+                };
+
+                // save this user to the firestore collection
+                usersRef
+                  .doc(uid)
+                  .set(userData)
+                  .then(() => {
+                    resolve({
+                      user: { ...userData, id: uid, userID: uid },
+                      accountCreated: true,
+                    });
+                  });
+              }
             })
             // error passed in as an argument
             .catch((e) => {
@@ -72,8 +116,18 @@ const signinWithGoogleFirebase = (googleUser) => {
               // ...
             });
         } else {
-          resolve(1);
-          console.log("User already signed-in Firebase.");
+          // if the user is equal (has already logged in via Firebase authentication system)
+          const { uid } = firebaseUser;
+          usersRef
+            .doc(uid)
+            .get()
+            .then((document) => {
+              const userData = document.data();
+              resolve({
+                user: { ...userData, id: uid, userID: uid },
+                accountCreated: false,
+              });
+            });
         }
       });
   });

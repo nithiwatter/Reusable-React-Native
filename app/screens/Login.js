@@ -1,6 +1,7 @@
 import React from "react";
 
 import authManager from "../auth/authManager";
+import AuthContext from "../auth/context";
 import { theme } from "../config";
 import Screen from "../components/Screen";
 import Block from "../components/Block";
@@ -9,6 +10,14 @@ import Button from "../components/Button";
 import { Form, FormInput, SubmitButton } from "../components/form";
 
 export default function Login() {
+  const { setUser } = React.useContext(AuthContext);
+
+  const handleLogin = async () => {
+    const userData = await authManager.signinWithGoogleAsync();
+    const { user } = userData;
+    setUser(user);
+  };
+
   return (
     <Screen modal>
       <Block middle center>
@@ -47,7 +56,7 @@ export default function Login() {
           <Button
             width="100%"
             style={{ borderWidth: 1, borderColor: theme.colors.primary }}
-            onPress={authManager.signinWithGoogleAsync}
+            onPress={handleLogin}
           >
             <Typography h3 primary bold>
               Google Login

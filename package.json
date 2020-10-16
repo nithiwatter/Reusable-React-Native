@@ -19,7 +19,7 @@
     "expo-image-picker": "~9.1.0",
     "expo-linear-gradient": "~8.3.0",
     "expo-status-bar": "~1.0.2",
-    "firebase": "^7.23.0",
+    "firebase": "7.9.0",
     "formik": "^2.2.0",
     "hex-to-rgba": "^2.0.1",
     "react": "16.13.1",
