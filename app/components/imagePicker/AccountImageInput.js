@@ -1,17 +1,15 @@
 import React from "react";
-import {
-  Platform,
-  TouchableWithoutFeedback,
-  Image,
-  StyleSheet,
-} from "react-native";
+import rgba from "hex-to-rgba";
+import { Platform, TouchableWithoutFeedback, StyleSheet } from "react-native";
 import { Avatar } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 
 import { theme } from "../../config";
 import Block from "../Block";
+import Badge from "../Badge";
+import Icon from "../Icon";
 
-export default function AccountImageInput({ image, setImage }) {
+export default function AccountImageInput({ image, setImage, size = 70 }) {
   React.useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
@@ -46,21 +44,33 @@ export default function AccountImageInput({ image, setImage }) {
     <React.Fragment>
       {!image && (
         <TouchableWithoutFeedback onPress={pickImage}>
-          <Avatar.Icon
-            size={70}
-            icon="camera"
-            style={{ backgroundColor: theme.colors.light }}
-          />
+          <Block flex={false} middle center style={styles.container}>
+            <Avatar.Icon
+              size={size}
+              icon="camera"
+              style={{ backgroundColor: theme.colors.light }}
+            />
+          </Block>
         </TouchableWithoutFeedback>
       )}
       {image && (
         <TouchableWithoutFeedback onPress={pickImage}>
-          <Avatar.Image
-            size={70}
-            source={{
-              uri: image,
-            }}
-          />
+          <Block flex={false} middle center style={styles.container}>
+            <Avatar.Image
+              size={size}
+              source={{
+                uri: image,
+              }}
+              style={{ backgroundColor: theme.colors.light }}
+            />
+            <Badge
+              style={styles.editIcon}
+              size={30}
+              color={rgba(theme.colors.gray, 0.4)}
+            >
+              <Icon name="circle-edit-outline" size={25} color="light" />
+            </Badge>
+          </Block>
         </TouchableWithoutFeedback>
       )}
     </React.Fragment>
@@ -70,9 +80,12 @@ export default function AccountImageInput({ image, setImage }) {
 const styles = StyleSheet.create({
   container: {
     overflow: "hidden",
+    position: "relative",
   },
-  image: {
-    height: "100%",
-    width: "100%",
+  editIcon: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    zIndex: 1,
   },
 });

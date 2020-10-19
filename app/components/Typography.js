@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   white: { color: theme.colors.white },
   gray: { color: theme.colors.gray },
   gray2: { color: theme.colors.gray2 },
-  light: { color: theme.colors.light },
+  lightColor: { color: theme.colors.light },
   // fonts
   h1: theme.fonts.h1,
   h2: theme.fonts.h2,

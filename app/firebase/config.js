@@ -1,4 +1,11 @@
-import * as firebase from "firebase";
+// the core app of firebase
+import * as firebase from "firebase/app";
+
+// import only what are needed
+import "firebase/auth";
+import "firebase/firestore";
+import "firebase/storage";
+
 import {
   FIREBASE_API_KEY,
   FIREBASE_AUTH_DOMAIN,
