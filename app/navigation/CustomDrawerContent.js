@@ -5,7 +5,7 @@ import {
   DrawerItemList,
   DrawerItem,
 } from "@react-navigation/drawer";
-import { Avatar } from "react-native-elements";
+import { Avatar } from "react-native-paper";
 
 import AuthContext from "../auth/context";
 import authManager from "../auth/authManager";
@@ -27,22 +27,18 @@ export default function CustomDrawerContent(props) {
       <Block flex={false} row center margin={[30, 0]}>
         <Block flex={false} middle center margin={[0, 15]}>
           {user.profilePictureURL !== "" ? (
-            <Avatar
-              rounded
+            <Avatar.Image
+              size={50}
               source={{
                 uri: user.profilePictureURL,
               }}
-              size={50}
-              activeOpacity={0.7}
             />
           ) : (
-            <Avatar
-              rounded
-              title={user.email[0].toUpperCase()}
+            <Avatar.Text
               size={50}
-              activeOpacity={0.7}
-              overlayContainerStyle={{ backgroundColor: theme.colors.light }}
-              titleStyle={{ color: theme.colors.gray }}
+              label={user.email[0].toUpperCase()}
+              style={{ backgroundColor: theme.colors.light }}
+              labelStyle={{ color: theme.colors.gray }}
             />
           )}
         </Block>

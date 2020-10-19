@@ -11,7 +11,7 @@ import Loading from "./app/screens/Loading";
 
 // need this to ignore timer warning
 // internal issue with the firebase web sdk and react-native sockets
-// LogBox.ignoreLogs(["Setting a timer"]);
+LogBox.ignoreLogs(["Setting a timer"]);
 
 // need this to prevent Hook from retaining local state (for debugging didMount animations)
 // @refresh reset

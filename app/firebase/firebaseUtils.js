@@ -1,4 +1,8 @@
 import { firebase } from "../firebase/config";
+// need this line to use firstore function
+// firebase by itself does not import firestore
+import "firebase/firestore";
+
 const usersRef = firebase.firestore().collection("users");
 
 const addUserToFirestore = (user) => {

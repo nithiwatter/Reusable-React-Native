@@ -5,7 +5,7 @@ import {
   Image,
   StyleSheet,
 } from "react-native";
-import { Avatar, Accessory } from "react-native-elements";
+import { Avatar } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 
 import { theme } from "../../config";
@@ -43,31 +43,27 @@ export default function AccountImageInput({ image, setImage }) {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={pickImage}>
-      <React.Fragment>
-        {!image && (
-          <Avatar
-            icon={{ name: "camera", type: "material-community" }}
-            size="large"
-            rounded
-            overlayContainerStyle={{ backgroundColor: theme.colors.gray2 }}
-            onPress={pickImage}
+    <React.Fragment>
+      {!image && (
+        <TouchableWithoutFeedback onPress={pickImage}>
+          <Avatar.Icon
+            size={70}
+            icon="camera"
+            style={{ backgroundColor: theme.colors.light }}
           />
-        )}
-        {image && (
-          <Avatar
+        </TouchableWithoutFeedback>
+      )}
+      {image && (
+        <TouchableWithoutFeedback onPress={pickImage}>
+          <Avatar.Image
+            size={70}
             source={{
               uri: image,
             }}
-            size="large"
-            rounded
-            onPress={pickImage}
-          >
-            <Accessory size={25} name="camera" type="material-community" />
-          </Avatar>
-        )}
-      </React.Fragment>
-    </TouchableWithoutFeedback>
+          />
+        </TouchableWithoutFeedback>
+      )}
+    </React.Fragment>
   );
 }
 
