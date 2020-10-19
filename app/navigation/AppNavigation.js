@@ -21,6 +21,7 @@ import Register from "../screens/Register";
 // logged in flow
 const HomeStack = createStackNavigator();
 const SearchStack = createStackNavigator();
+const MyProfileStack = createStackNavigator();
 const MainTab = createMaterialBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -58,6 +59,7 @@ const BackIcon = (props) => {
 const HomeStackNavigator = () => {
   return (
     <HomeStack.Navigator
+      initialRouteName="Home"
       screenOptions={({ navigation }) => ({
         headerTitleAlign: "center",
         headerLeft: (props) => <MenuIcon navigation={navigation} {...props} />,
@@ -72,6 +74,7 @@ const HomeStackNavigator = () => {
 const SearchStackNavigator = () => {
   return (
     <SearchStack.Navigator
+      initialRouteName="Search"
       screenOptions={({ navigation }) => ({
         headerTitleAlign: "center",
         headerLeft: (props) => <MenuIcon navigation={navigation} {...props} />,
@@ -80,6 +83,24 @@ const SearchStackNavigator = () => {
       <SearchStack.Screen name="Search" component={Search} />
       <SearchStack.Screen name="Details" component={Details} />
     </SearchStack.Navigator>
+  );
+};
+
+const MyProfileStackNavigator = () => {
+  return (
+    <MyProfileStack.Navigator
+      initialRouteName="MyProfile"
+      screenOptions={({ navigation }) => ({
+        headerTitleAlign: "center",
+        headerLeft: (props) => <MenuIcon navigation={navigation} {...props} />,
+      })}
+    >
+      <MyProfileStack.Screen
+        name="MyProfile"
+        component={MyProfile}
+        options={{ title: "My Profile" }}
+      />
+    </MyProfileStack.Navigator>
   );
 };
 
@@ -177,8 +198,8 @@ const DrawerNavigator = () => {
         }}
       />
       <Drawer.Screen
-        name="MyProfile"
-        component={MyProfile}
+        name="MyProfileStack"
+        component={MyProfileStackNavigator}
         options={{
           drawerIcon: ({ color, size }) => (
             <Icon name="account" color={color} size={size} />

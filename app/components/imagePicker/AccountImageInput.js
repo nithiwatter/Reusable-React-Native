@@ -5,10 +5,11 @@ import {
   Image,
   StyleSheet,
 } from "react-native";
+import { Avatar, Accessory } from "react-native-elements";
 import * as ImagePicker from "expo-image-picker";
 
-import Badge from "../Badge";
-import Icon from "../Icon";
+import { theme } from "../../config";
+import Block from "../Block";
 
 export default function AccountImageInput({ image, setImage }) {
   React.useEffect(() => {
@@ -36,15 +37,36 @@ export default function AccountImageInput({ image, setImage }) {
 
     if (!result.cancelled) {
       setImage(result.uri);
+    } else {
+      setImage(null);
     }
   };
 
   return (
     <TouchableWithoutFeedback onPress={pickImage}>
-      <Badge size={80} color="light" style={styles.container}>
-        {!image && <Icon color="gray" name="camera" size={40} />}
-        {image && <Image source={{ uri: image }} style={styles.image} />}
-      </Badge>
+      <React.Fragment>
+        {!image && (
+          <Avatar
+            icon={{ name: "camera", type: "material-community" }}
+            size="large"
+            rounded
+            overlayContainerStyle={{ backgroundColor: theme.colors.gray2 }}
+            onPress={pickImage}
+          />
+        )}
+        {image && (
+          <Avatar
+            source={{
+              uri: image,
+            }}
+            size="large"
+            rounded
+            onPress={pickImage}
+          >
+            <Accessory size={25} name="camera" type="material-community" />
+          </Avatar>
+        )}
+      </React.Fragment>
     </TouchableWithoutFeedback>
   );
 }
