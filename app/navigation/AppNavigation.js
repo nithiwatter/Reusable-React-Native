@@ -12,7 +12,11 @@ import CustomDrawerContent from "./CustomDrawerContent";
 import Home from "../screens/Home";
 import Search from "../screens/Search";
 import Details from "../screens/Details";
+
 import MyProfile from "../screens/MyProfile";
+import ChangeProfile from "../screens/ChangeProfile";
+import Settings from "../screens/Settings";
+import ContactUs from "../screens/ContactUs";
 
 import Welcome from "../screens/Welcome";
 import Login from "../screens/Login";
@@ -88,17 +92,32 @@ const SearchStackNavigator = () => {
 
 const MyProfileStackNavigator = () => {
   return (
-    <MyProfileStack.Navigator
-      initialRouteName="MyProfile"
-      screenOptions={({ navigation }) => ({
-        headerTitleAlign: "center",
-        headerLeft: (props) => <MenuIcon navigation={navigation} {...props} />,
-      })}
-    >
+    <MyProfileStack.Navigator initialRouteName="MyProfile">
       <MyProfileStack.Screen
         name="MyProfile"
         component={MyProfile}
-        options={{ title: "My Profile" }}
+        options={({ navigation }) => ({
+          headerTitleAlign: "center",
+          headerLeft: (props) => (
+            <MenuIcon navigation={navigation} {...props} />
+          ),
+          title: "MyProfile",
+        })}
+      />
+      <MyProfileStack.Screen
+        name="ChangeProfile"
+        component={ChangeProfile}
+        options={{ title: "Change Profile" }}
+      />
+      <MyProfileStack.Screen
+        name="Settings"
+        component={Settings}
+        options={{ title: "Settings" }}
+      />
+      <MyProfileStack.Screen
+        name="ContactUs"
+        component={ContactUs}
+        options={{ title: "Contact Us" }}
       />
     </MyProfileStack.Navigator>
   );
@@ -178,7 +197,7 @@ const DrawerNavigator = () => {
       drawerType="back"
       openByDefault={false}
       drawerContentOptions={{
-        activeTintColor: theme.colors.secondary,
+        activeTintColor: theme.colors.primary,
         labelStyle: {
           fontSize: theme.sizes.h2,
           fontWeight: "bold",

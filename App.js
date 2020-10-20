@@ -1,6 +1,7 @@
 import React from "react";
 import { LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 
 import AuthContext from "./app/auth/context";
 import {
@@ -25,10 +26,12 @@ export default function App() {
   }
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      <NavigationContainer>
-        {user ? <DrawerNavigator /> : <AuthenticationStackNavigator />}
-      </NavigationContainer>
-    </AuthContext.Provider>
+    <ActionSheetProvider>
+      <AuthContext.Provider value={{ user, setUser }}>
+        <NavigationContainer>
+          {user ? <DrawerNavigator /> : <AuthenticationStackNavigator />}
+        </NavigationContainer>
+      </AuthContext.Provider>
+    </ActionSheetProvider>
   );
 }

@@ -75,6 +75,7 @@ export default function Login() {
               <FormInput
                 name="password"
                 placeholder="Password"
+                secureTextEntry
                 width="100%"
                 margin={[20, 0, 0, 0]}
                 style={{ borderWidth: 2, borderColor: theme.colors.light }}

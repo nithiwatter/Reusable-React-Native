@@ -108,17 +108,6 @@ export default function Register() {
                 <SubmitButton title="Register" width="100%" />
               </Block>
             </Form>
-            <Typography h2 gray>
-              Or
-            </Typography>
-            <Button
-              width="100%"
-              style={{ borderWidth: 1, borderColor: theme.colors.primary }}
-            >
-              <Typography h3 primary bold>
-                Google Login
-              </Typography>
-            </Button>
           </Block>
         </Block>
       </ScrollView>

@@ -2,7 +2,7 @@ import { firebase } from "./config";
 import ErrorCode from "../config/errorCode";
 
 const getBlob = async (uri) => {
-  return await new Promise((resolve) => {
+  return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
     xhr.onload = () => {
       resolve(xhr.response);
