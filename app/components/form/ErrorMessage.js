@@ -7,7 +7,7 @@ export default function ErrorMessage(props) {
   if (!visible || !error) return null;
 
   return (
-    <Block flex={false} width="100%" middle padding={10}>
+    <Block flex={false} width="100%" middle padding={15}>
       <Typography h3 accent>
         {error}
       </Typography>

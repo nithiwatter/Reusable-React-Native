@@ -7,11 +7,13 @@ import { theme } from "../config";
 import Screen from "../components/Screen";
 import Block from "../components/Block";
 import Typography from "../components/Typography";
-import { Form, FormInput } from "../components/form";
+import { Form, FormInput, FormikStandAloneError } from "../components/form";
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const validationSchema = Yup.object().shape({
+  firstName: Yup.string().required("First name is a required field"),
+  lastName: Yup.string().required("Last name is a required field"),
   phone: Yup.string().matches(phoneRegExp, "Phone number is not valid"),
 });
 
@@ -70,6 +72,7 @@ export default function ChangeProfile() {
                 inputStyle={styles.input}
               />
             </Block>
+            <FormikStandAloneError name="firstName" />
 
             <Block flex={false} row space="between" center>
               <Block flex={false} row middle center padding={[0, 0, 0, 15]}>
@@ -85,6 +88,7 @@ export default function ChangeProfile() {
                 inputStyle={styles.input}
               />
             </Block>
+            <FormikStandAloneError name="lastName" />
 
             <Block flex={false} row space="between" center>
               <Block flex={false} row middle center padding={[0, 0, 0, 15]}>
@@ -101,6 +105,7 @@ export default function ChangeProfile() {
                 keyboardType="number-pad"
               />
             </Block>
+            <FormikStandAloneError name="phone" />
           </Form>
         </Block>
       </Block>
