@@ -14,6 +14,7 @@ export default function FormInput(props) {
     touched,
   } = useFormikContext();
 
+  // save some rerender by handling onChangeText to maybe onFocus?
   return (
     <React.Fragment>
       <Input

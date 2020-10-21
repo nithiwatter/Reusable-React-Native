@@ -3,6 +3,8 @@ import { useNavigation } from "@react-navigation/native";
 
 import AuthContext from "../auth/context";
 import authManager from "../auth/authManager";
+import firebaseStorage from "../firebase/firebaseStorage";
+import firebaseUtils from "../firebase/firebaseUtils";
 
 import { theme } from "../config";
 import Screen from "../components/Screen";
@@ -50,11 +52,47 @@ export default function MyProfile() {
     setUser(null);
   };
 
+  const changeProfilePicture = async (imageURL) => {
+    let toBeDeleted = null;
+    let newUser = { ...user };
+    // the profile picture url could be "" (falsey)
+    if (user.profilePictureURL) {
+      const { url, error } = firebaseStorage.getRefToStoredFile(
+        user.profilePictureURL
+      );
+      if (!error) toBeDeleted = url;
+    }
+
+    // first upload the image to firebase
+    const { downloadURL, error } = await firebaseStorage.uploadImageAsync(
+      imageURL
+    );
+
+    if (!error) {
+      // update the user for this new URL from firebase storage
+      await firebaseUtils.updateProfilePicture(user.userID, downloadURL);
+      // update the cache
+
+      if (toBeDeleted) {
+        //save storage by deleting the old file
+        await firebaseStorage.deleteFile(toBeDeleted);
+      }
+      // update the cache user
+      newUser.profilePictureURL = downloadURL;
+      setImage(imageURL);
+      setUser(newUser);
+    }
+  };
+
   return (
     <Screen modal>
       <Block center>
         <Block flex={false} middle center margin={[20, 0]}>
-          <AccountImageInput image={image} setImage={setImage} size={100} />
+          <AccountImageInput
+            image={image}
+            setImage={changeProfilePicture}
+            size={100}
+          />
         </Block>
 
         <Block flex={false} middle center>

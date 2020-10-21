@@ -51,4 +51,22 @@ const uploadImageAsync = async (uri) => {
   });
 };
 
-export default { uploadImageAsync };
+const getRefToStoredFile = (downloadURL) => {
+  try {
+    const url = firebase.storage().refFromURL(downloadURL);
+    return { success: true, url };
+  } catch (err) {
+    return { error: "This file does not exist in firebase storage" };
+  }
+};
+
+const deleteFile = (ref) => {
+  return new Promise((resolve) => {
+    ref.delete().then(() => {
+      console.log("File deleted successfully");
+      resolve({ success: true });
+    });
+  });
+};
+
+export default { uploadImageAsync, getRefToStoredFile, deleteFile };

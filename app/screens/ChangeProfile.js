@@ -2,12 +2,19 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import * as Yup from "yup";
 
+import firebaseUtils from "../firebase/firebaseUtils";
 import AuthContext from "../auth/context";
 import { theme } from "../config";
 import Screen from "../components/Screen";
 import Block from "../components/Block";
 import Typography from "../components/Typography";
-import { Form, FormInput, FormikStandAloneError } from "../components/form";
+import LoadingIndicator from "../components/LoadingIndicator";
+import {
+  Form,
+  FormInput,
+  FormikStandAloneError,
+  SubmitButton,
+} from "../components/form";
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
@@ -18,14 +25,33 @@ const validationSchema = Yup.object().shape({
 });
 
 export default function ChangeProfile() {
-  const { user } = React.useContext(AuthContext);
+  const { user, setUser } = React.useContext(AuthContext);
+  const [loading, setLoading] = React.useState(false);
 
-  const handleSubmit = (values) => {
-    console.log(values);
+  const handleSubmit = async (values) => {
+    setLoading(true);
+    // change phone number to int
+    const tempValues = { ...values };
+    if (tempValues.phone) tempValues.phone = parseInt(tempValues.phone);
+    const { error, updatedUser } = await firebaseUtils.updateUserToFirestore(
+      user.userID,
+      tempValues
+    );
+
+    if (error) {
+      // alert something here
+      return console.log("Something went wrong while updating...");
+    } else {
+      // handle updating the user (as its single source of truth)
+      setUser(updatedUser);
+    }
+
+    return setLoading(false);
   };
 
   return (
     <Screen modal>
+      {loading && <LoadingIndicator />}
       <Block center>
         <Block
           flex={false}
@@ -53,7 +79,7 @@ export default function ChangeProfile() {
             initialValues={{
               firstName: user.firstName,
               lastName: user.lastName,
-              phone: user.phone,
+              phone: user.phone.toString(),
             }}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
@@ -106,6 +132,13 @@ export default function ChangeProfile() {
               />
             </Block>
             <FormikStandAloneError name="phone" />
+            <Block flex={false} center middle>
+              <SubmitButton
+                title="Click here to update profile"
+                gradient={false}
+                style={styles.button}
+              />
+            </Block>
           </Form>
         </Block>
       </Block>
@@ -126,5 +159,9 @@ const styles = StyleSheet.create({
     flex: 0,
     marginLeft: 0,
     textAlign: "right",
+  },
+  button: {
+    backgroundColor: theme.colors.accent,
+    width: "70%",
   },
 });

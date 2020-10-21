@@ -63,7 +63,24 @@ const updateProfilePicture = (userId, downloadURI) => {
         resolve({ success: true });
       })
       .catch((error) => {
-        resolve({ error });
+        return resolve({ error });
+      });
+  });
+};
+
+const updateUserToFirestore = (uid, updatedData) => {
+  return new Promise((resolve) => {
+    usersRef
+      .doc(uid)
+      .update({ ...updatedData })
+      .then(() => {
+        const updatedUserRef = usersRef.doc(uid);
+        updatedUserRef.get().then((doc) => {
+          return resolve({ success: true, updatedUser: doc.data() });
+        });
+      })
+      .catch((error) => {
+        return resolve({ error });
       });
   });
 };
@@ -91,5 +108,6 @@ export default {
   addUserToFirestore,
   getUserFromFirestore,
   updateProfilePicture,
+  updateUserToFirestore,
   isUserEqual,
 };
