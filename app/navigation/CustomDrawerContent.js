@@ -22,6 +22,8 @@ export default function CustomDrawerContent(props) {
     setUser(null);
   };
 
+  if (!user) return null;
+
   return (
     <DrawerContentScrollView {...props}>
       <Block flex={false} row center margin={[30, 0]}>

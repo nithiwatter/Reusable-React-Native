@@ -36,6 +36,11 @@ const menuItems = [
 export default function MyProfile() {
   const navigation = useNavigation();
   const { user, setUser } = React.useContext(AuthContext);
+
+  // need to check user is null
+  // react navigation keeps stack despite unmounting! (potentially a bug)
+  if (!user) return null;
+
   const startingImage =
     user.profilePictureURL === "" ? null : user.profilePictureURL;
   const [image, setImage] = React.useState(startingImage);
