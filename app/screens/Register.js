@@ -81,6 +81,7 @@ export default function Register() {
                 width="100%"
                 margin={[20, 0, 0, 0]}
                 style={{ borderWidth: 2, borderColor: theme.colors.light }}
+                enableError
               />
               <FormInput
                 name="password"
@@ -89,6 +90,7 @@ export default function Register() {
                 width="100%"
                 margin={[20, 0, 0, 0]}
                 style={{ borderWidth: 2, borderColor: theme.colors.light }}
+                enableError
               />
               <FormInput
                 name="repeatedPassword"
@@ -97,6 +99,7 @@ export default function Register() {
                 width="100%"
                 margin={[20, 0, 0, 0]}
                 style={{ borderWidth: 2, borderColor: theme.colors.light }}
+                enableError
               />
               <Block
                 flex={false}

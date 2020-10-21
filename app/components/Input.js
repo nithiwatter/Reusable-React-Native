@@ -1,3 +1,4 @@
+import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 import React from "react";
 import { TextInput, StyleSheet } from "react-native";
 import { theme } from "../config";
@@ -8,10 +9,12 @@ import Icon from "./Icon";
 export default function Input(props) {
   const {
     icon,
-    width = "100%",
+    width,
     margin,
     elevation = 0,
     style = {},
+    inputStyle = {},
+    color = theme.colors.black,
     ...otherProps
   } = props;
 
@@ -29,7 +32,13 @@ export default function Input(props) {
       {icon && <Icon name={icon} iconSize={20} iconColor="gray2" />}
       <TextInput
         placeholderTextColor={theme.colors.gray}
-        style={{ flex: 1, marginLeft: 10, ...theme.fonts.h3 }}
+        style={{
+          flex: 1,
+          marginLeft: 10,
+          ...theme.fonts.h3,
+          color,
+          ...inputStyle,
+        }}
         {...otherProps}
       ></TextInput>
     </Block>
