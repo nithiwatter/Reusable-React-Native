@@ -7,6 +7,7 @@ import firebaseStorage from "../firebase/firebaseStorage";
 import firebaseUtils from "../firebase/firebaseUtils";
 
 import { theme } from "../config";
+import LoadingIndicator from "../components/LoadingIndicator";
 import Screen from "../components/Screen";
 import Block from "../components/Block";
 import Typography from "../components/Typography";
@@ -38,21 +39,26 @@ const menuItems = [
 export default function MyProfile() {
   const navigation = useNavigation();
   const { user, setUser } = React.useContext(AuthContext);
+  const [loading, setLoading] = React.useState(false);
+  let startingImage = null;
+  if (user) {
+    startingImage =
+      user.profilePictureURL === "" ? null : user.profilePictureURL;
+  }
+  const [image, setImage] = React.useState(startingImage);
 
   // need to check user is null
   // react navigation keeps stack despite unmounting! (potentially a bug)
   if (!user) return null;
 
-  const startingImage =
-    user.profilePictureURL === "" ? null : user.profilePictureURL;
-  const [image, setImage] = React.useState(startingImage);
-
   const handleLogout = async () => {
+    console.log("logging out");
     await authManager.logout();
     setUser(null);
   };
 
   const changeProfilePicture = async (imageURL) => {
+    setLoading(true);
     let toBeDeleted = null;
     let newUser = { ...user };
     // the profile picture url could be "" (falsey)
@@ -61,6 +67,21 @@ export default function MyProfile() {
         user.profilePictureURL
       );
       if (!error) toBeDeleted = url;
+    }
+
+    // user decides to delete the image
+    if (!imageURL) {
+      if (toBeDeleted) {
+        //save storage by deleting the old file
+        await firebaseStorage.deleteFile(toBeDeleted);
+      }
+      // update the profile picture url as ""
+      await firebaseUtils.updateProfilePicture(user.userID, "");
+      newUser.profilePictureURL = "";
+      setLoading(false);
+      setImage(null);
+      setUser(newUser);
+      return;
     }
 
     // first upload the image to firebase
@@ -79,13 +100,15 @@ export default function MyProfile() {
       }
       // update the cache user
       newUser.profilePictureURL = downloadURL;
-      setImage(imageURL);
+      setLoading(false);
+      setImage(downloadURL);
       setUser(newUser);
     }
   };
 
   return (
     <Screen modal>
+      {loading && <LoadingIndicator />}
       <Block center>
         <Block flex={false} middle center margin={[20, 0]}>
           <AccountImageInput
